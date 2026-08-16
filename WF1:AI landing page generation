@@ -1,0 +1,750 @@
+{
+  "name": "AI landing page generation",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7df2ad93-38d5-499c-b57e-c3c16f31fd89",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10tKXi5qYivoT4XEK7M0bVDpRoBvf24baTpZQ3KV3p28",
+          "mode": "list",
+          "cachedResultName": "North America Countries and Cities",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10tKXi5qYivoT4XEK7M0bVDpRoBvf24baTpZQ3KV3p28/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1670320847,
+          "mode": "list",
+          "cachedResultName": "North America Countries and Cities",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10tKXi5qYivoT4XEK7M0bVDpRoBvf24baTpZQ3KV3p28/edit#gid=1670320847"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "status",
+              "lookupValue": "not done"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ba03351d-38fa-4d2a-ad9d-836dc3c7cab7",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aaPzvRnAITZqBSvX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d4224e72-e070-4f0b-8571-04e28786293a",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "actorId": {
+          "__rl": true,
+          "value": "https://console.apify.com/actors/nwua9Gu5YrADL7ZDj/input?addFromActorId=nwua9Gu5YrADL7ZDj",
+          "mode": "url"
+        },
+        "customBody": "={\n  \"searchStringsArray\": [\n    \"Companies in {{ $json.City }},{{ $json.Country }}\"\n  ],\n  \"maxCrawledPlacesPerSearch\": 500\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        640,
+        16
+      ],
+      "id": "640f89d6-94ce-4a15-bca5-ecfb9f91464b",
+      "name": "Run an Actor",
+      "credentials": {
+        "apifyApi": {
+          "id": "ppiVpoBWUVLwnqDm",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "limit": null,
+        "options": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        912,
+        16
+      ],
+      "id": "9fecbb45-ea69-44ce-b7d9-73945f3b75c8",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyApi": {
+          "id": "ppiVpoBWUVLwnqDm",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemma-4-26b-a4b-it",
+          "mode": "list",
+          "cachedResultName": "models/gemma-4-26b-a4b-it"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Analyze this business details and return ONLY a valid JSON object:\nBusiness: {{ $json.title }}\nCategory: {{ $json.categoryName }}\nLocation: {{ $json.address }}\n\nJSON Format:\n{\n  \"positioning_summary\": \"Short summary\",\n  \"identified_gaps\": [\"No website presence\"],\n  \"recommended_pitch\": \"Custom Landing Page\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        1888,
+        32
+      ],
+      "id": "c1a8ef17-dbd0-44e4-a59c-aea069ae7eee",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "l335AMlh7gIeA0uv",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "60824a7d-6628-4f5c-b439-1d27fae6faf0",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=You are an expert Principal Frontend Engineer, UI/UX Designer, and Copywriter specializing in building high-converting, production-ready landing pages for local businesses that DO NOT currently have an active website.\n\nTASK\nBuild a complete, responsive, and visual Dynamic Business Landing Page using React (functional components + Hooks) and Tailwind CSS.\n\nCRITICAL INSTRUCTION - AI GENERATIVE & AUTOMATION LOGIC:\nThe incoming JSON (`companyData`) will ONLY contain raw business context (Name, Category, Location, Short Description). \nYou must NOT expect fully written headings, subheadings, or pre-written copywriting in the JSON payload.\nInstead, your component/code must act as an AI Copywriter & Theme Engine:\n1. Dynamic Copywriting: Generate compelling Hero Headings, Subheadings, Feature descriptions, and Call-to-Actions (CTAs) dynamically based on the provided `businessInfo.category` and `businessInfo.description`.\n2. Dynamic Branding: Do NOT hardcode colors. If `branding` colors are missing, dynamically assign a cohesive, modern color palette (Primary & Secondary) suitable for the business category (e.g., Construction = Earthy/Dark Blue, Dental = Clean Teal/Cyan, Law = Navy/Gold).\n3. Dynamic Imagery: Fall back to highly relevant Unsplash image keywords or category-based visual placeholders for Hero and Feature images if explicit URLs are not provided.\n\nTECH STACK\n- React 18+ (Functional components, Hooks only)\n- Tailwind CSS (Utility-first)\n- Lucide React (for dynamic category icons)\n- Mobile-first responsive layout (Mobile, Tablet, Desktop)\n\nINPUT DATA CONTRACT (Minimal Automation Payload)\nThe component must consume a dynamic payload object (`companyData`) structured like this (notice that many fields are generated/optional):\n\n{\n  \"businessInfo\": {\n    \"name\": {{ $('Loop Over Items1').item.json.title }},\n    \"category\":{{ $('Loop Over Items1').item.json.categoryName }}\",\n    \"location\": \"{{ $('Loop Over Items1').item.json.address }}\",\n    \"description\":{{ $('Loop Over Items1').item.json.description }} ,\n    \"phone\": {{ $('Loop Over Items1').item.json.phone }},\n    \n    \"logoUrl\": \"\" // Optional: AI falls back to a clean text-based dynamic logo badge\n  },\n  \"branding\": {\n{{ $('Loop Over Items1').item.json.imagesCount }}{{ $('Loop Over Items1').item.json.imageUrl }}\n    // Optional: If empty/null, AI generates/assigns dynamic theme colors based on the category\n    \"primaryColor\": \"\", \n    \"secondaryColor\": \"\"\n  },\n  \"auditMetrics\": {\n    // Optional: Dynamic audit badges if coming from an automated assessment pipeline\n    \"overallScore\": 88,\n    \"categories\": [\n      { \"label\": \"Technical Readiness\", \"score\": 90 },\n      { \"label\": \"Local SEO Score\", \"score\": 85 }\n    ]\n  }\n}\n\nREQUIRED LANDING PAGE SECTIONS (Rendered in Order)\n1. Sticky Header / Navbar: Business Name, Category Badge, Navigation Links, and direct WhatsApp/Call CTA button. Mobile hamburger menu included.\n2. AI-Generated Hero Section:\n   - Dynamic Heading: AI generates an attention-grabbing hero title matching the industry.\n   - Dynamic Subheading: AI generates a benefit-driven value proposition.\n   - Dynamic CTA Buttons: Primary (WhatsApp/Quote) & Secondary (Call/Learn More).\n   - Dynamic Visual / Hero Graphic: Category-relevant high-quality background or image container.\n3. About & Verification Section: Displays business location, category trust credentials, and AI-formatted description.\n4. Audit & Quality Assessment Block (Optional): Renders trust/score badges if `auditMetrics` exist.\n5. Smart Features & Services Grid (3-6 Cards): AI infers 3 to 4 core services based on the `category` and `description` (e.g., Custom Cutting, Fast Delivery, Expert Installation) with dynamic Lucide icons.\n6. Dynamic Testimonials / Social Proof: Generates 2-3 industry-relevant placeholder reviews/quotes.\n7. Service Packages / Pricing Guidance: Generates 2-3 typical service tier cards for that industry.\n8. High-Impact Call-To-Action (CTA) Banner: Encourages immediate contact via WhatsApp or Phone call.\n9. Footer: Complete contact details, address, dynamic quick links, and copyright notice.\n\nTHEMING & CODE QUALITY REQUIREMENTS\n- Use inline CSS variables or dynamic style bindings for `primaryColor` and `secondaryColor` so any palette can be injected at runtime without breaking Tailwind.\n- Ensure 100% safety against missing fields: every single text node must have a smart fallback based on the business category.\n- Single-file component code (`DynamicLandingPage.jsx`) with clear comments where sub-components (Navbar, Hero, Features, CTA) can be extracted.\n\nDELIVERABLE FORMAT\n1. Complete React Component (`DynamicLandingPage.jsx`) with built-in AI copywriting & color-fallback engine.\n2. Sample Minimal Input JSON (showing how n8n/Backend can pass minimal data).\n3. Express.js / Node.js API Route snippet showing how minimal data is pushed to the React Frontend.\nRITICAL OUTPUT REQUIREMENT - SINGLE FILE CONSOLIDATION:\nDo NOT output multiple separate files, code blocks, or broken snippets. Merge everything into a SINGLE, fully self-contained file (e.g., `DynamicLandingPageApp.jsx` or `index.jsx`). \n\nInside this single file, structure the output strictly in this sequence using clear inline comments:\n1. Complete React Component (`DynamicLandingPage`) with the full AI copywriting, image fallback, and dynamic color logic.\n2. Example minimal input JSON payload (`companyData`) defined as a JavaScript object/constant at the bottom.\n3. Express.js Node.js API endpoint route (`GET /api/business/:id`) wrapped in a commented backend block.\n4. Frontend `useEffect` fetch integration example wrapped in a commented implementation block.\n\nEverything must be delivered inside one single code block so it can be easily copied and tested at once."
+            }
+          ]
+        },
+        "simplify": false,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        2224,
+        16
+      ],
+      "id": "b3feb422-3518-4215-8b62-7a409643fc0d",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "qfWgsQbLMIkfRmQ5",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.output[0].content[0].text }}",
+        "name": "={{ $('Filter').item.json.business_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1BCRWeARTQhHrcPceCscyF9o-F4kX1nh_",
+          "mode": "list",
+          "cachedResultName": "landing page",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1BCRWeARTQhHrcPceCscyF9o-F4kX1nh_"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2592,
+        32
+      ],
+      "id": "2bb86b48-35a9-46f3-9dee-ab3296719414",
+      "name": "Create file from text",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "gwqTCI56Y69oeIqP",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1tY4vtz7rN7V84RSjPCh9So4k-jiYCh1j6v45EVqEpyo",
+          "mode": "list",
+          "cachedResultName": "Companies of north america",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tY4vtz7rN7V84RSjPCh9So4k-jiYCh1j6v45EVqEpyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 366949032,
+          "mode": "list",
+          "cachedResultName": "data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tY4vtz7rN7V84RSjPCh9So4k-jiYCh1j6v45EVqEpyo/edit#gid=366949032"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "City": "={{ $('Loop Over Items').item.json.City }}",
+            "status": "done"
+          },
+          "matchingColumns": [
+            "City"
+          ],
+          "schema": [
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1936,
+        -192
+      ],
+      "id": "f3dc7c15-b170-4b97-b198-a04f30686389",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aaPzvRnAITZqBSvX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tY4vtz7rN7V84RSjPCh9So4k-jiYCh1j6v45EVqEpyo",
+          "mode": "list",
+          "cachedResultName": "real websites.",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tY4vtz7rN7V84RSjPCh9So4k-jiYCh1j6v45EVqEpyo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 366949032,
+          "mode": "list",
+          "cachedResultName": "uper di hoti mai companies k data mai websites ka...",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tY4vtz7rN7V84RSjPCh9So4k-jiYCh1j6v45EVqEpyo/edit#gid=366949032"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "business_name": "={{ $json.title }}",
+            "category": "={{ $json.categoryName }}",
+            "city": "={{ $json.city }}",
+            "address": "={{ $json.address }}",
+            "phone": "={{ $json.phone }}",
+            "lead_id": "=LEAD-{{ Math.floor(1000 + Math.random() * 9000) }}",
+            "url": "={{ $json.website }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "lead_id",
+              "displayName": "lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "business_name",
+              "displayName": "business_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "final_url",
+              "displayName": "final_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "technical_score",
+              "displayName": "technical_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "performance_score",
+              "displayName": "performance_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "accessibility_score",
+              "displayName": "accessibility_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "seo_score",
+              "displayName": "seo_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "design_score",
+              "displayName": "design_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "conversion_score",
+              "displayName": "conversion_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "overall_score",
+              "displayName": "overall_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "classification",
+              "displayName": "classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "top_5_problems",
+              "displayName": "top_5_problems",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "screen_url",
+              "displayName": "screen_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        16
+      ],
+      "id": "3ba10c81-a778-4940-b73a-610b19025c29",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "aaPzvRnAITZqBSvX",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2d84a769-dd61-48c6-afc5-8cc95aabb0f3",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1360,
+        16
+      ],
+      "id": "9513893d-881d-44c3-90e2-b2fd150b5ca5",
+      "name": "Filter"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Run an Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Create file from text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create file from text": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "755c49ce-8163-42e4-8bc4-b3646d61d454",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7b306457276a81e33e9c2d7bd74063f36caaef0e7cf8611eee8b3332bb2dd71e"
+  },
+  "nodeGroups": [],
+  "id": "jvfaFZ6uaExgfKBs",
+  "tags": []
+}
