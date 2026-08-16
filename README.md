@@ -1,0 +1,2 @@
+# B2B-AI-Prospecting-Pipeline-Lead-Audit-Dynamic-Landing-Page-Generator
+An automated B2B lead intelligence workflow that scales local business outreach by evaluating digital presence across two automated paths:  Has Website: Audits performance, SEO, and accessibility via Google PageSpeed Insights, assigning a 0–100 Business Health Score.  No Website: Uses Claude &amp; Gemini to auto-generate  landing pages as sales demos.
