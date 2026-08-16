@@ -18,8 +18,8 @@
 ### 🚀 Architectural Overview & Conditional Routing Logic
 
 This automation pipeline systematically ingests local business leads, validates digital presence, and splits execution into two intelligent tracks based on conditional routing logic:
-        ```                 
-                         +----------------------------+
+       
+                          +----------------------------+
                           |   Multi-Source Extraction  |
                           |  (Google Places / Apify)   |
                           +----------------------------+
@@ -38,7 +38,7 @@ This automation pipeline systematically ingests local business leads, validates 
                                v                v
         +---------------------------+      +---------------------------+
         |  AI Landing Page Generator|      | Multi-Factor Audit Engine |
-        |  (Claude / Gemini AI)     |      | (PageSpeed API / Microlink) |
+        |  (Claude / Gemini AI)     |      | (PageSpeed API / Microlink)|
         +---------------------------+      +---------------------------+
                        |                                |
                        v                                v
@@ -51,7 +51,7 @@ This automation pipeline systematically ingests local business leads, validates 
                           +----------------------------+
                           | Aggregated Sheets Audit &  |
                           | Analytics Dashboard        |
-                          +----------------------------+ ```
+                          +----------------------------+
 ## 🎯 Target Problems & Automated Solutions
 
 | Traditional B2B Prospecting Problem | Automated AI Pipeline Solution |
